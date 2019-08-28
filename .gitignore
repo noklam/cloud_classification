@@ -4,3 +4,6 @@
 *.zip
 *.tar
 *.tar.gz
+.vscode
+*workspace
+.pytest_cache
