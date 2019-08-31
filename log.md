@@ -12,3 +12,4 @@
 - [ ] Cluster base on Dark Shadow
 - [ ]  ItemList
 - [ ]  ImageSegment
+- [ ]  MultiCategoryList
