@@ -7,3 +7,11 @@
 .vscode
 *workspace
 .pytest_cache
+log/
+*.pyc
+*.txt
+events*
+*.pth
+*.pkl
+.ipynb_checkpoints
+*.ipynb

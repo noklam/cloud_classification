@@ -53,5 +53,3 @@ list((DATA/'train').iterdir())
 list((DATA/'test').glob('*'))
 
 
-#%%
-fn.parts

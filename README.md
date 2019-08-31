@@ -1,5 +1,7 @@
 https://www.kaggle.com/c/understanding_cloud_organization
-
+* Each image has at least one cloud formation, and can possibly contain up to all all four.
+* Multi label + segmentation
+* 
 # Prepare the data
 
 ```sh
@@ -15,7 +17,6 @@ mkdir input notebook
 mv *.csv input
 mv *.zip input
 cd input
-unzip train.csv.zip
 mkdir train test
 unzip -d train train_images.zip
 unzip -d test test_images.zip
