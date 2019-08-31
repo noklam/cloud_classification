@@ -10,3 +10,5 @@
 # Todo
 - [ ] Figure out what transformation make sense for satellite image
 - [ ] Cluster base on Dark Shadow
+- [ ]  ItemList
+- [ ]  ImageSegment
