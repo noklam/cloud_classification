@@ -38,6 +38,7 @@ def rle_decode(mask_rle: str = '', shape: tuple = (1400, 2100)):
 def make_mask(df: pd.DataFrame, image_name: str='img.jpg', shape: tuple = (1400, 2100)):
     """
     Create mask based on df, image name and shape.
+    Assumpt df is sorted and label always follow the same order.
     """
     encoded_masks = df.loc[df['im_id'] == image_name, 'EncodedPixels']
     masks = np.zeros((shape[0], shape[1], 4), dtype=np.float32)

@@ -13,3 +13,4 @@
 - [ ]  ItemList
 - [ ]  ImageSegment
 - [ ]  MultiCategoryList
+- [ ]  SmoothLoss

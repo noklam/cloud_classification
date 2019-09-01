@@ -2,12 +2,12 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,auto:percent
+#     formats: ipynb,py:percent
 #     text_representation:
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.2'
-#       jupytext_version: 0.8.6
+#       jupytext_version: 1.2.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -79,11 +79,18 @@ os.listdir(path)
 # We have folders with train and test images, file with train image ids and masks and sample submission.
 
 # %%
-train = pd.read_csv(f'{path}/train.csv')
+# train = pd.read_csv(f'{path}/train.csv')
+# train['image'] = train['Image_Label'].apply(lambda x: x.split('_')[0])
+# train = train[train['image'].isin(os.listdir('../input/train'))]
+# train.to_csv('../input/train_sample.csv', index=False)
+
+# %%
+
+train = pd.read_csv(f'{path}/train_sample.csv')
 sub = pd.read_csv(f'{path}/sample_submission.csv')
 
 # %%
-train.head()
+train.__len__()
 
 # %%
 n_train = len(os.listdir(f'{path}/train'))
@@ -128,6 +135,7 @@ fig = plt.figure(figsize=(25, 16))
 for j, im_id in enumerate(np.random.choice(train['im_id'].unique(), 4)):
     for i, (idx, row) in enumerate(train.loc[train['im_id'] == im_id].iterrows()):
         ax = fig.add_subplot(5, 4, j * 4 + i + 1, xticks=[], yticks=[])
+        print(f"{path}/train/{row['Image_Label'].split('_')[0]}")
         im = Image.open(f"{path}/train/{row['Image_Label'].split('_')[0]}")
         plt.imshow(im)
         mask_rle = row['EncodedPixels']
@@ -196,7 +204,7 @@ from dataset import CloudDataset
 
 # %%
 num_workers = 0
-bs = 16
+bs = 4
 train_dataset = CloudDataset(path=path, df=train, datatype='train', img_ids=train_ids)
 valid_dataset = CloudDataset(path=path, df=train, datatype='valid', img_ids=valid_ids)
 
@@ -213,8 +221,104 @@ print()
 from fastai.vision import *
 
 # %%
-train_dataset.x = 0
-valid_dataset.x = 0
+# train_dataset.x = 0
+# valid_dataset.x = 0
+
+# %%
+# train = train.iloc[0:40]
+
+# %%
+# class MultiMasksList(SegmentationLabelList):
+#     def __init__(self, *args, erosion=True, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.erosion = erosion
+
+#     def open(self, fn):
+#         mask_files = next(os.walk(fn))[2]
+#         mask = open_image(os.path.join(fn, mask_files.pop(0)),
+#                           convert_mode='L').px
+#         for mask_file in mask_files:
+#             mask += open_image(os.path.join(fn, mask_file),
+#                                convert_mode='L').px
+#         if self.erosion:
+#             mask = torch.tensor(
+#                 cv2.erode(
+#                     mask.numpy().squeeze().astype(np.uint8),
+#                     np.ones((3, 3),
+#                             np.uint8),
+#                     iterations=1)).unsqueeze(0)
+#         return Image(mask.float())
+
+#     def analyze_pred(self, pred, thresh: float = 0.5):
+#         return (pred > thresh).float()
+
+#     def reconstruct(self, t): return Image(t)
+
+# %%
+mask.shape
+
+# %%
+b=torch.tensor(mask.transpose(2,0,1))
+
+# %%
+ImageSegment(b)
+
+# %%
+ImageSegment(b[0,None,::])
+
+# %% [markdown]
+# #### b.data.std()
+
+# %%
+ImageSegment(torch.tensor(mask.transpose(2,0,1))/2)
+
+
+# %%
+class SegmentationMultiLabelList(SegmentationLabelList):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print('Oh!')
+        print(*args, kwargs.keys())
+        print(type(*args))
+    def open(self, fn):
+#         from pdb import set_trace
+#         set_trace()
+        print('stop!')
+        mask = make_mask(train, fn.parts[-1])
+        return ImageSegment(torch.tensor(mask.transpose(2,0,1)))
+
+
+# %%
+# a=(SegmentationItemList.from_folder(path) \
+#  .split_by_rand_pct())
+
+# a.label_from_func(lambda fn :make_mask(train, fn.parts[-1]))
+
+# %%
+a=(SegmentationItemList.from_folder(path) \
+ .split_by_rand_pct())
+a
+
+# %%
+??open_mask
+
+
+# %%
+def make_mask2(fn):
+    return make_mask(train,fn)
+
+
+# %%
+(SegmentationItemList.from_folder(path) \
+ .split_by_rand_pct().
+ label_from_func(open_mask, label_cls=SegmentationMultiLabelList)
+)
+
+# %%
+(SegmentationItemList.from_folder(path) \
+ .split_by_rand_pct().
+ label_from_func(lambda x: make_mask(train, x.parts[-1]))
+)
 
 # %%
 data = ImageDataBunch.create(train_ds=train_dataset, valid_ds=valid_dataset, test_ds=None,
