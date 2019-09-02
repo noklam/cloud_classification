@@ -90,9 +90,6 @@ train = pd.read_csv(f'{path}/train_sample.csv')
 sub = pd.read_csv(f'{path}/sample_submission.csv')
 
 # %%
-train.__len__()
-
-# %%
 n_train = len(os.listdir(f'{path}/train'))
 n_test = len(os.listdir(f'{path}/test'))
 print(f'There are {n_train} images in train dataset')
@@ -123,9 +120,6 @@ sub['im_id'] = sub['Image_Label'].apply(lambda x: x.split('_')[0])
 
 # %% [markdown]
 # Let's have a look at the images and the masks.
-
-# %%
-train.head()
 
 # %%
 sub.head()
@@ -160,6 +154,9 @@ reset_index().rename(columns={'index': 'img_id', 'Image_Label': 'count'})
 train_ids, valid_ids = train_test_split(id_mask_count['img_id'].values, random_state=42, stratify=id_mask_count['count'], test_size=0.1)
 test_ids = sub['Image_Label'].apply(lambda x: x.split('_')[0]).drop_duplicates().values
 
+# %%
+train_ids
+
 # %% [markdown]
 # ## Exploring augmentations with albumentations
 #
@@ -172,6 +169,9 @@ train_ids[0]
 image_name = train_ids[0]
 image = get_img(image_name, path=path)
 mask = make_mask(train, image_name)
+
+# %%
+get_img??
 
 # %%
 visualize(image, mask)
@@ -259,18 +259,24 @@ mask.shape
 
 # %%
 b=torch.tensor(mask.transpose(2,0,1))
-
-# %%
-ImageSegment(b)
-
-# %%
 ImageSegment(b[0,None,::])
 
-# %% [markdown]
-# #### b.data.std()
+# %%
+# a=(SegmentationItemList.from_folder(path) \
+#  .split_by_rand_pct())
+
+# a.label_from_func(lambda fn :make_mask(train, fn.parts[-1]))
 
 # %%
-ImageSegment(torch.tensor(mask.transpose(2,0,1))/2)
+il=(SegmentationItemList.from_folder(path) \
+ .split_by_rand_pct())
+il
+
+# %%
+type(il)
+
+# %%
+il.label_from_func(open_mask)
 
 
 # %%
@@ -284,28 +290,9 @@ class SegmentationMultiLabelList(SegmentationLabelList):
 #         from pdb import set_trace
 #         set_trace()
         print('stop!')
+        print(fn)
         mask = make_mask(train, fn.parts[-1])
         return ImageSegment(torch.tensor(mask.transpose(2,0,1)))
-
-
-# %%
-# a=(SegmentationItemList.from_folder(path) \
-#  .split_by_rand_pct())
-
-# a.label_from_func(lambda fn :make_mask(train, fn.parts[-1]))
-
-# %%
-a=(SegmentationItemList.from_folder(path) \
- .split_by_rand_pct())
-a
-
-# %%
-??open_mask
-
-
-# %%
-def make_mask2(fn):
-    return make_mask(train,fn)
 
 
 # %%

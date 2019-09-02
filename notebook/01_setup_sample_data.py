@@ -44,12 +44,12 @@ if DEBUG:
 df.head()
 
 
-#%%
+# %%
 list((DATA_DIR/'train').iterdir())
-#%%
+# %%
 list((DATA/'train').iterdir())
 
-#%%
+# %%
 list((DATA/'test').glob('*'))
 
 

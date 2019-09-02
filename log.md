@@ -12,5 +12,5 @@
 - [ ] Cluster base on Dark Shadow
 - [ ]  ItemList
 - [ ]  ImageSegment
-- [ ]  MultiCategoryList
 - [ ]  SmoothLoss
+- [ ]  What type is y on camvid?
